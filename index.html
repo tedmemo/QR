@@ -351,11 +351,19 @@
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         document.getElementById('profileImageUrl').value = e.target.result;
+                        updateImagePreview(e.target.result);
                     };
                     reader.readAsDataURL(file);
                 }
             });
         });
+
+        function updateImagePreview(imageUrl) {
+            const imgElement = document.getElementById('profileImagePreview');
+            if (imgElement) {
+                imgElement.src = imageUrl;
+            }
+        }
 
         function addButton() {
             const container = document.getElementById('buttonsContainer');
@@ -538,7 +546,7 @@
                 <div class="profile-wrapper">
                     <div class="profile-left">
                         <div class="profile-pic">
-                            <img id="profileImage" src="${data.profileImage}" alt="Profile Image" />
+                            <img id="profileImagePreview" src="${data.profileImage}" alt="Profile Image" />
                         </div>
                         <div class="profile-info">
                             <h1 style="font-size: ${data.nameSize}; color: ${data.nameColor};">${data.name}</h1>
