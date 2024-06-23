@@ -295,40 +295,37 @@
                         <label for="customerDescriptionColor">Description Color:</label>
                         <input type="color" id="customerDescriptionColor" value="#000000">
                     </div>
+                    <div class="form-group">
+                        <label for="markdownHelp">Markdown Help:</label>
+                        <select id="markdownHelp" onchange="showMarkdownHelp()">
+                            <option value="">Select a Markdown format...</option>
+                            <option value="**Bold**">**Bold**</option>
+                            <option value="*Italic*">*Italic*</option>
+                            <option value="_Italic_">_Italic_</option>
+                            <option value="***Bold Italic***">***Bold Italic***</option>
+                            <option value="__Underline__">__Underline__</option>
+                            <option value="[Link text](any valid URL)">[Link text](any valid URL)</option>
+                            <option value="\`Code\`">`Code`</option>
+                            <option value="~~Strike~~">~~Strike~~</option>
+                            <option value="==Highlight==">==Highlight==</option>
+                            <option value="||Spoilers||">||Spoilers||</option>
+                            <option value="[Color text]{colorname}">[Color text]{colorname}</option>
+                            <option value="[Color text]{#colorcode}">[Color text]{#colorcode}</option>
+                            <option value="Line\nBreak">Line\nBreak</option>
+                            <option value="Non-Breaking\sSpace">Non-Breaking\sSpace</option>
+                        </select>
+                        <div id="markdownHelpDisplay" style="margin-top: 10px;"></div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="profileImage">Profile Image URL or Upload:</label>
                     <input type="text" id="profileImageUrl" placeholder="Enter image URL">
                     <input type="file" id="profileImageFile" accept="image/*">
                 </div>
-                <div class="form-group">
-                    <label for="markdownHelp">Markdown Help:</label>
-                    <select id="markdownHelp" onchange="showMarkdownHelp()">
-                        <option value="">Select a Markdown format...</option>
-                        <option value="**Bold**">**Bold**</option>
-                        <option value="*Italic*">*Italic*</option>
-                        <option value="_Italic_">_Italic_</option>
-                        <option value="***Bold Italic***">***Bold Italic***</option>
-                        <option value="__Underline__">__Underline__</option>
-                        <option value="[Link text](any valid URL)">[Link text](any valid URL)</option>
-                        <option value="\`Code\`">`Code`</option>
-                        <option value="~~Strike~~">~~Strike~~</option>
-                        <option value="==Highlight==">==Highlight==</option>
-                        <option value="||Spoilers||">||Spoilers||</option>
-                        <option value="[Color text]{colorname}">[Color text]{colorname}</option>
-                        <option value="[Color text]{#colorcode}">[Color text]{#colorcode}</option>
-                        <option value="Line\nBreak">Line\nBreak</option>
-                        <option value="Non-Breaking\sSpace">Non-Breaking\sSpace</option>
-                    </select>
-                    <div id="markdownHelpDisplay" style="margin-top: 10px;"></div>
-                </div>
             </div>
             <div class="profile-right">
-                <div class="form-group">
-                    <label>Buttons:</label>
-                    <div class="buttons-container" id="buttonsContainer"></div>
-                    <button type="button" class="profile-button" onclick="addButton()">Add Button</button>
-                </div>
+                <div class="buttons-container" id="buttonsContainer"></div>
+                <button type="button" class="profile-button" onclick="addButton()">Add Button</button>
                 <div class="button-row">
                     <button class="profile-button" id="previewButton" onclick="openModal()">Preview Profile</button>
                     <button class="profile-button" id="generateButton">Generate Profile</button>
