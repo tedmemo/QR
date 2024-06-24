@@ -46,24 +46,6 @@
         .form-group textarea {
             height: 120px;
         }
-        .color-picker-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .color-picker-container input[type="color"] {
-            margin-right: 10px;
-        }
-        .color-picker-container .color-preview {
-            width: 40px;
-            height: 20px;
-            border: 1px solid #ddd;
-            margin-right: 10px;
-        }
-        .color-picker-container .color-code {
-            font-size: 0.9em;
-            color: #555;
-        }
         .buttons-container {
             margin-bottom: 20px;
         }
@@ -278,99 +260,26 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-</head>
-<body>
-    <div class="container">
-        <div class="profile-wrapper">
-            <div class="profile-left">
-                <h1>Create Profile</h1>
-                <div class="form-group">
-                    <label for="customerName">Your Name:</label>
-                    <input type="text" id="customerName">
-                </div>
-                <button type="button" class="collapsible" onclick="toggleDropdown('nameSizeColor')">Size and Color</button>
-                <div class="content" id="nameSizeColor">
-                    <div class="form-group">
-                        <label for="customerNameSize">Name Size:</label>
-                        <input type="number" id="customerNameSize" value="16" min="10" max="72">
-                    </div>
-                    <div class="form-group">
-                        <label for="customerNameColor">Name Color:</label>
-                        <div class="color-picker-container">
-                            <input type="color" id="customerNameColor" value="#000000">
-                            <div class="color-preview" id="nameColorPreview" style="background-color: #000000;"></div>
-                            <div class="color-code" id="nameColorCode">Color Code: #000000</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="customerDescription">Description (Markdown Supported):</label>
-                    <textarea id="customerDescription" placeholder="Enter description with Markdown support..."></textarea>
-                </div>
-                <button type="button" class="collapsible" onclick="toggleDropdown('descriptionSizeColor')">Size and Color</button>
-                <div class="content" id="descriptionSizeColor">
-                    <div class="form-group">
-                        <label for="customerDescriptionSize">Description Size:</label>
-                        <input type="number" id="customerDescriptionSize" value="14" min="10" max="72">
-                    </div>
-                    <div class="form-group">
-                        <label for="customerDescriptionColor">Description Color:</label>
-                        <div class="color-picker-container">
-                            <input type="color" id="customerDescriptionColor" value="#000000">
-                            <div class="color-preview" id="descriptionColorPreview" style="background-color: #000000;"></div>
-                            <div class="color-code" id="descriptionColorCode">Color Code: #000000</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="markdownHelp">Markdown Help:</label>
-                        <select id="markdownHelp" onchange="showMarkdownHelp()">
-                            <option value="">Select a Markdown format...</option>
-                            <option value="**Bold**">**Bold**</option>
-                            <option value="*Italic*">*Italic*</option>
-                            <option value="_Italic_">_Italic_</option>
-                            <option value="***Bold Italic***">***Bold Italic***</option>
-                            <option value="__Underline__">__Underline__</option>
-                            <option value="[Link text](any valid URL)">[Link text](any valid URL)</option>
-                            <option value="\`Code\`">`Code`</option>
-                            <option value="~~Strike~~">~~Strike~~</option>
-                            <option value="==Highlight==">==Highlight==</option>
-                            <option value="||Spoilers||">||Spoilers||</option>
-                            <option value="[Color text]{colorname}">[Color text]{colorname}</option>
-                            <option value="[Color text]{#colorcode}">[Color text]{#colorcode}</option>
-                            <option value="Line\nBreak">Line\nBreak</option>
-                            <option value="Non-Breaking\sSpace">Non-Breaking\sSpace</option>
-                        </select>
-                        <div id="markdownHelpDisplay" style="margin-top: 10px;"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="profileImage">Profile Image URL or Upload:</label>
-                    <input type="text" id="profileImageUrl" placeholder="Enter image URL">
-                    <input type="file" id="profileImageFile" accept="image/*">
-                </div>
-            </div>
-            <div class="profile-right">
-                <div class="buttons-container" id="buttonsContainer"></div>
-                <button type="button" class="profile-button" onclick="addButton()">Add Button</button>
-                <div class="button-row">
-                    <button class="profile-button" id="previewButton" onclick="openModal()">Preview Profile</button>
-                    <button class="profile-button" id="generateButton">Generate Profile</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Profile Preview -->
-    <div id="profileModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <div id="profilePreview"></div>
-        </div>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('generateButton').addEventListener('click', generateProfile);
+            document.getElementById('exportButton').addEventListener('click', function() {
+                const profileData = generateProfileData();
+                if (!profileData) return;
+
+                const data = {
+                    name: profileData.name,
+                    nameSize: profileData.nameSize,
+                    nameColor: profileData.nameColor,
+                    description: profileData.description,
+                    descriptionSize: profileData.descriptionSize,
+                    descriptionColor: profileData.descriptionColor,
+                    profileImage: profileData.profileImage,
+                    buttons: profileData.buttons
+                };
+
+                sendEmail(data);
+            });
+
             document.getElementById('profileImageFile').addEventListener('change', function(event) {
                 const file = event.target.files[0];
                 if (file) {
@@ -382,11 +291,13 @@
                     reader.readAsDataURL(file);
                 }
             });
+
             document.getElementById('customerNameColor').addEventListener('input', function() {
                 const color = this.value;
                 document.getElementById('nameColorPreview').style.backgroundColor = color;
                 document.getElementById('nameColorCode').textContent = 'Color Code: ' + color;
             });
+
             document.getElementById('customerDescriptionColor').addEventListener('input', function() {
                 const color = this.value;
                 document.getElementById('descriptionColorPreview').style.backgroundColor = color;
@@ -412,6 +323,74 @@
             const imgElement = document.querySelectorAll('#profileImagePreview');
             imgElement.forEach(function(element){
                 element.src = imageUrl;
+            });
+        }
+
+        function generateProfileData() {
+            const customerName = document.getElementById('customerName').value;
+            const customerNameSize = document.getElementById('customerNameSize').value + "px";
+            const customerNameColor = document.getElementById('customerNameColor').value;
+            const customerDescription = marked.parse(document.getElementById('customerDescription').value.replace(/\n/g, '  \n'));
+            const customerDescriptionSize = document.getElementById('customerDescriptionSize').value + "px";
+            const customerDescriptionColor = document.getElementById('customerDescriptionColor').value;
+            const profileImage = document.getElementById('profileImageUrl').value;
+            const buttonLabels = document.querySelectorAll('.button-label');
+            const buttonIcons = document.querySelectorAll('.select-selected');
+            const buttonUrls = document.querySelectorAll('.button-url');
+            const buttonColors = document.querySelectorAll('.button-color');
+            const buttonLabelColors = document.querySelectorAll('.button-label-color');
+            const buttonIconColors = document.querySelectorAll('.button-icon-color');
+
+            if (!customerName) {
+                alert("Please enter a customer name.");
+                return null;
+            }
+
+            const buttons = [];
+            for (let i = 0; i < buttonLabels.length; i++) {
+                if (buttonLabels[i].value && buttonUrls[i].value) {
+                    buttons.push({
+                        label: buttonLabels[i].value,
+                        icon: buttonIcons[i].getAttribute('data-value'),
+                        url: buttonUrls[i].value,
+                        color: buttonColors[i].value,
+                        labelColor: buttonLabelColors[i].value,
+                        iconColor: buttonIconColors[i].value
+                    });
+                }
+            }
+
+            return {
+                name: customerName,
+                nameSize: customerNameSize,
+                nameColor: customerNameColor,
+                description: customerDescription,
+                descriptionSize: customerDescriptionSize,
+                descriptionColor: customerDescriptionColor,
+                profileImage: profileImage,
+                buttons: buttons
+            };
+        }
+
+        function sendEmail(data) {
+            fetch('https://tedmemo.com/wp-json/email/v1/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Profile sent successfully!');
+                } else {
+                    alert('Failed to send profile.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to send profile.');
             });
         }
 
@@ -594,248 +573,98 @@
             const content = document.getElementById(contentId);
             content.style.display = content.style.display === "block" ? "none" : "block";
         }
-
-        function generateProfileHTML() {
-            const customerName = document.getElementById('customerName').value;
-            const customerNameSize = document.getElementById('customerNameSize').value + "px";
-            const customerNameColor = document.getElementById('customerNameColor').value;
-            const customerDescription = marked.parse(document.getElementById('customerDescription').value.replace(/\n/g, '  \n'));
-            const customerDescriptionSize = document.getElementById('customerDescriptionSize').value + "px";
-            const customerDescriptionColor = document.getElementById('customerDescriptionColor').value;
-            const profileImage = document.getElementById('profileImageUrl').value;
-            const buttonLabels = document.querySelectorAll('.button-label');
-            const buttonIcons = document.querySelectorAll('.select-selected');
-            const buttonUrls = document.querySelectorAll('.button-url');
-            const buttonColors = document.querySelectorAll('.button-color');
-            const buttonLabelColors = document.querySelectorAll('.button-label-color');
-            const buttonIconColors = document.querySelectorAll('.button-icon-color');
-
-            if (!customerName) {
-                alert("Please enter a customer name.");
-                return null;
-            }
-
-            const buttons = [];
-            for (let i = 0; i < buttonLabels.length; i++) {
-                if (buttonLabels[i].value && buttonUrls[i].value) {
-                    buttons.push({
-                        label: buttonLabels[i].value,
-                        icon: buttonIcons[i].getAttribute('data-value'),
-                        url: buttonUrls[i].value,
-                        color: buttonColors[i].value,
-                        labelColor: buttonLabelColors[i].value,
-                        iconColor: buttonIconColors[i].value
-                    });
-                }
-            }
-
-            const data = {
-                name: customerName,
-                nameSize: customerNameSize,
-                nameColor: customerNameColor,
-                description: customerDescription,
-                descriptionSize: customerDescriptionSize,
-                descriptionColor: customerDescriptionColor,
-                profileImage: profileImage,
-                buttons: buttons
-            };
-
-            return `
-            <div class="container">
-                <div class="profile-wrapper">
-                    <div class="profile-left">
-                        <div class="profile-pic">
-                            <img id="profileImagePreview" src="${data.profileImage}" alt="Profile Image" />
-                        </div>
-                        <div class="profile-info">
-                            <h1 style="font-size: ${data.nameSize}; color: ${data.nameColor};">${data.name}</h1>
-                            <div style="font-size: ${data.descriptionSize}; color: ${data.descriptionColor};">${data.description}</div>
-                        </div>
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="profile-wrapper">
+            <div class="profile-left">
+                <h1>Create Profile</h1>
+                <div class="form-group">
+                    <label for="customerName">Your Name:</label>
+                    <input type="text" id="customerName">
+                </div>
+                <button type="button" class="collapsible" onclick="toggleDropdown('nameSizeColor')">Size and Color</button>
+                <div class="content" id="nameSizeColor">
+                    <div class="form-group">
+                        <label for="customerNameSize">Name Size:</label>
+                        <input type="number" id="customerNameSize" value="16" min="10" max="72">
                     </div>
-                    <div class="profile-right">
-                        ${data.buttons.map(button => `
-                        <button class="profile-button" style="background-color: ${button.color}; color: ${button.labelColor}; display: flex; justify-content: flex-start; align-items: center;">
-                            <i class="fa-icon fas ${button.icon}" style="color: ${button.iconColor};"></i>
-                            <span style="flex-grow: 1; text-align: center;">${button.label}</span>
-                        </button>`).join('')}
+                    <div class="form-group">
+                        <label for="customerNameColor">Name Color:</label>
+                        <div class="color-picker-container">
+                            <input type="color" id="customerNameColor" value="#000000">
+                            <div class="color-preview" id="nameColorPreview" style="background-color: #000000;"></div>
+                            <div class="color-code" id="nameColorCode">Color Code: #000000</div>
+                        </div>
                     </div>
                 </div>
-            </div>`;
-        }
+                <div class="form-group">
+                    <label for="customerDescription">Description (Markdown Supported):</label>
+                    <textarea id="customerDescription" placeholder="Enter description with Markdown support..."></textarea>
+                </div>
+                <button type="button" class="collapsible" onclick="toggleDropdown('descriptionSizeColor')">Size and Color</button>
+                <div class="content" id="descriptionSizeColor">
+                    <div class="form-group">
+                        <label for="customerDescriptionSize">Description Size:</label>
+                        <input type="number" id="customerDescriptionSize" value="14" min="10" max="72">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerDescriptionColor">Description Color:</label>
+                        <div class="color-picker-container">
+                            <input type="color" id="customerDescriptionColor" value="#000000">
+                            <div class="color-preview" id="descriptionColorPreview" style="background-color: #000000;"></div>
+                            <div class="color-code" id="descriptionColorCode">Color Code: #000000</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="markdownHelp">Markdown Help:</label>
+                        <select id="markdownHelp" onchange="showMarkdownHelp()">
+                            <option value="">Select a Markdown format...</option>
+                            <option value="**Bold**">**Bold**</option>
+                            <option value="*Italic*">*Italic*</option>
+                            <option value="_Italic_">_Italic_</option>
+                            <option value="***Bold Italic***">***Bold Italic***</option>
+                            <option value="__Underline__">__Underline__</option>
+                            <option value="[Link text](any valid URL)">[Link text](any valid URL)</option>
+                            <option value="\`Code\`">`Code`</option>
+                            <option value="~~Strike~~">~~Strike~~</option>
+                            <option value="==Highlight==">==Highlight==</option>
+                            <option value="||Spoilers||">||Spoilers||</option>
+                            <option value="[Color text]{colorname}">[Color text]{colorname}</option>
+                            <option value="[Color text]{#colorcode}">[Color text]{#colorcode}</option>
+                            <option value="Line\nBreak">Line\nBreak</option>
+                            <option value="Non-Breaking\sSpace">Non-Breaking\sSpace</option>
+                        </select>
+                        <div id="markdownHelpDisplay" style="margin-top: 10px;"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="profileImage">Profile Image URL or Upload:</label>
+                    <input type="text" id="profileImageUrl" placeholder="Enter image URL">
+                    <input type="file" id="profileImageFile" accept="image/*">
+                </div>
+            </div>
+            <div class="profile-right">
+                <div class="buttons-container" id="buttonsContainer"></div>
+                <button type="button" class="profile-button" onclick="addButton()">Add Button</button>
+                <div class="button-row">
+                    <button class="profile-button" id="previewButton" onclick="openModal()">Preview Profile</button>
+                    <button class="profile-button" id="exportButton">Finalize and Export Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        function generateProfile() {
-            const profileHTML = generateProfileHTML();
-            if (!profileHTML) return;
+    <!-- Modal for Profile Preview -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="profilePreview"></div>
+        </div>
+    </div>
 
-            const template = `
-            <!DOCTYPE HTML>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <title>Profile Page</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        margin: 0;
-                        padding: 0;
-                        background-color: #f5f5f5;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        min-height: 100vh;
-                    }
-                    .container {
-                        display: flex;
-                        flex-direction: column;
-                        background-color: white;
-                        border-radius: 10px;
-                        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                        padding: 20px;
-                        width: 90%;
-                        max-width: 900px;
-                        margin: 20px auto;
-                    }
-                    .profile-left, .profile-right {
-                        background-color: white;
-                    }
-                    .profile-left {
-                        padding: 20px;
-                        text-align: center;
-                        width: 100%;
-                    }
-                    .profile-pic img {
-                        width: 100px;
-                        height: 100px;
-                        border-radius: 50%;
-                        object-fit: cover;
-                        display: block;
-                        margin: 0 auto;
-                    }
-                    .profile-info h1 {
-                        margin: 20px 0 10px;
-                        font-size: 2em;
-                    }
-                    .profile-info p {
-                        margin: 0;
-                        color: gray;
-                    }
-                    .profile-right {
-                        padding: 20px;
-                        width: 100%;
-                        display: flex;
-                        flex-direction: column;
-                    }
-                    .profile-button {
-                        border: none;
-                        border-radius: 10px;
-                        padding: 15px;
-                        margin: 10px 0;
-                        text-align: center;
-                        font-size: 1em;
-                        display: flex;
-                        justify-content: flex-start;
-                        align-items: center;
-                        cursor: pointer;
-                        transition: transform 0.2s;
-                    }
-                    .profile-button:hover {
-                        transform: scale(1.05);
-                    }
-                    .profile-button .icon {
-                        font-size: 1.2em;
-                        margin-right: 10px;
-                    }
-                    .fa-icon {
-                        margin-right: 10px;
-                    }
-                    @media (max-width: 600px) {
-                        body {
-                            background-color: white;
-                        }
-                        .container {
-                            width: 100%;
-                        }
-                        .profile-wrapper {
-                            flex-direction: column;
-                            align-items: center;
-                        }
-                        .profile-left, .profile-right {
-                            width: 100%;
-                            padding: 10px;
-                            border: none;
-                        }
-                        .profile-right {
-                            margin-top: 20px;
-                            border-top: 1px solid #ddd;
-                            padding-top: 20px;
-                        }
-                    }
-                    @media (min-width: 600px) {
-                        .container {
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                        }
-                        .profile-wrapper {
-                            width: 100%;
-                            padding: 20px;
-                            display: flex;
-                            flex-direction: row;
-                            justify-content: center;
-                        }
-                        .profile-left, .profile-right {
-                            width: 100%;
-                            padding: 20px;
-                            box-sizing: border-box;
-                            max-width: 450px; /* Ensuring each section doesn't exceed half the container's width */
-                        }
-                        .profile-left {
-                            border-right: 1px solid #ddd;
-                        }
-                    }
-                    .profile-button {
-                        border: none;
-                        border-radius: 10px;
-                        padding: 15px;
-                        margin: 10px 0;
-                        font-size: 1em;
-                        display: flex;
-                        align-items: center;
-                        cursor: pointer;
-                        transition: transform 0.2s, background-color 0.3s;
-                        background-color: #007BFF;
-                        color: #fff;
-                        width: 100%;
-                        box-sizing: border-box;
-                    }
-                    .profile-button:hover {
-                        transform: scale(1.05);
-                        background-color: #0056b3;
-                    }
-                    .profile-button .icon {
-                        font-size: 1.2em;
-                        margin-right: 10px;
-                    }
-                    .profile-button span {
-                        flex-grow: 1;
-                        text-align: center;
-                    }
-                </style>
-            </head>
-            <body>
-                ${profileHTML}
-            </body>
-            </html>`;
-
-            const blob = new Blob([template], { type: 'text/html' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `profile.html`;
-            a.click();
-        }
-
+    <script>
         function openModal() {
             const profileHTML = generateProfileHTML();
             if (!profileHTML) return;
