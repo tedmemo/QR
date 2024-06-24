@@ -46,6 +46,24 @@
         .form-group textarea {
             height: 120px;
         }
+        .color-picker-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .color-picker-container input[type="color"] {
+            margin-right: 10px;
+        }
+        .color-picker-container .color-preview {
+            width: 40px;
+            height: 20px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+        }
+        .color-picker-container .color-code {
+            font-size: 0.9em;
+            color: #555;
+        }
         .buttons-container {
             margin-bottom: 20px;
         }
@@ -278,7 +296,11 @@
                     </div>
                     <div class="form-group">
                         <label for="customerNameColor">Name Color:</label>
-                        <input type="color" id="customerNameColor" value="#000000">
+                        <div class="color-picker-container">
+                            <input type="color" id="customerNameColor" value="#000000">
+                            <div class="color-preview" id="nameColorPreview" style="background-color: #000000;"></div>
+                            <div class="color-code" id="nameColorCode">Color Code: #000000</div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -293,7 +315,11 @@
                     </div>
                     <div class="form-group">
                         <label for="customerDescriptionColor">Description Color:</label>
-                        <input type="color" id="customerDescriptionColor" value="#000000">
+                        <div class="color-picker-container">
+                            <input type="color" id="customerDescriptionColor" value="#000000">
+                            <div class="color-preview" id="descriptionColorPreview" style="background-color: #000000;"></div>
+                            <div class="color-code" id="descriptionColorCode">Color Code: #000000</div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="markdownHelp">Markdown Help:</label>
@@ -356,19 +382,44 @@
                     reader.readAsDataURL(file);
                 }
             });
+            document.getElementById('customerNameColor').addEventListener('input', function() {
+                const color = this.value;
+                document.getElementById('nameColorPreview').style.backgroundColor = color;
+                document.getElementById('nameColorCode').textContent = 'Color Code: ' + color;
+            });
+            document.getElementById('customerDescriptionColor').addEventListener('input', function() {
+                const color = this.value;
+                document.getElementById('descriptionColorPreview').style.backgroundColor = color;
+                document.getElementById('descriptionColorCode').textContent = 'Color Code: ' + color;
+            });
+
+            // Cache Busting
+            const timestamp = new Date().getTime();
+            const links = document.querySelectorAll('link[rel="stylesheet"], script[src]');
+            
+            links.forEach(link => {
+                const url = new URL(link.href || link.src);
+                url.searchParams.set('v', timestamp);
+                if (link.tagName === 'LINK') {
+                    link.href = url.toString();
+                } else if (link.tagName === 'SCRIPT') {
+                    link.src = url.toString();
+                }
+            });
         });
 
         function updateImagePreview(imageUrl) {
-            const imgElement = document.getElementById('profileImagePreview');
-            if (imgElement) {
-                imgElement.src = imageUrl;
-            }
+            const imgElement = document.querySelectorAll('#profileImagePreview');
+            imgElement.forEach(function(element){
+                element.src = imageUrl;
+            });
         }
 
         function addButton() {
             const container = document.getElementById('buttonsContainer');
             const div = document.createElement('div');
             div.className = 'form-group';
+            const buttonId = `button-${Date.now()}`;
             div.innerHTML = `
                 <button type="button" class="collapsible">New Button</button>
                 <div class="content">
@@ -388,13 +439,31 @@
                     </div>
                     <label>Button URL:</label>
                     <input type="text" class="button-url" placeholder="Enter button URL">
-                    <label>Button Background Color:</label>
-                    <input type="color" class="button-color" value="#e0f7fa" oninput="updateButtonColor(this)">
-                    <label>Button Label Color:</label>
-                    <input type="color" class="button-label-color" value="#000000" oninput="updateButtonLabelColor(this)">
-                    <label>Button Icon Color:</label>
-                    <input type="color" class="button-icon-color" value="#000000" oninput="updateButtonIconColor(this)">
-                    <div class="button-preview profile-button">
+                    <div class="form-group">
+                        <label>Button Background Color:</label>
+                        <div class="color-picker-container">
+                            <input type="color" class="button-color" value="#e0f7fa" oninput="updateButtonColor(this, '${buttonId}')">
+                            <div class="color-preview" id="${buttonId}-bg-preview" style="background-color: #e0f7fa;"></div>
+                            <div class="color-code" id="${buttonId}-bg-code">Color Code: #e0f7fa</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Button Label Color:</label>
+                        <div class="color-picker-container">
+                            <input type="color" class="button-label-color" value="#000000" oninput="updateButtonLabelColor(this, '${buttonId}')">
+                            <div class="color-preview" id="${buttonId}-label-preview" style="background-color: #000000;"></div>
+                            <div class="color-code" id="${buttonId}-label-code">Color Code: #000000</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Button Icon Color:</label>
+                        <div class="color-picker-container">
+                            <input type="color" class="button-icon-color" value="#000000" oninput="updateButtonIconColor(this, '${buttonId}')">
+                            <div class="color-preview" id="${buttonId}-icon-preview" style="background-color: #000000;"></div>
+                            <div class="color-code" id="${buttonId}-icon-code">Color Code: #000000</div>
+                        </div>
+                    </div>
+                    <div class="button-preview profile-button" id="${buttonId}-preview">
                         <i class="fa-icon fas"></i>
                         <span class="button-preview-label">New Button</span>
                     </div>
@@ -472,19 +541,49 @@
             previewLabel.textContent = input.value || 'New Button';
         }
 
-        function updateButtonColor(input) {
-            const previewButton = input.closest('.form-group').querySelector('.button-preview');
-            previewButton.style.backgroundColor = input.value;
+        function updateButtonColor(input, buttonId) {
+            const previewButton = document.getElementById(`${buttonId}-preview`);
+            if (previewButton) {
+                previewButton.style.backgroundColor = input.value;
+            }
+            const colorPreview = document.getElementById(`${buttonId}-bg-preview`);
+            if (colorPreview) {
+                colorPreview.style.backgroundColor = input.value;
+            }
+            const colorCode = document.getElementById(`${buttonId}-bg-code`);
+            if (colorCode) {
+                colorCode.textContent = 'Color Code: ' + input.value;
+            }
         }
 
-        function updateButtonLabelColor(input) {
-            const previewLabel = input.closest('.form-group').querySelector('.button-preview-label');
-            previewLabel.style.color = input.value;
+        function updateButtonLabelColor(input, buttonId) {
+            const previewLabel = document.getElementById(`${buttonId}-preview`).querySelector('.button-preview-label');
+            if (previewLabel) {
+                previewLabel.style.color = input.value;
+            }
+            const colorPreview = document.getElementById(`${buttonId}-label-preview`);
+            if (colorPreview) {
+                colorPreview.style.backgroundColor = input.value;
+            }
+            const colorCode = document.getElementById(`${buttonId}-label-code`);
+            if (colorCode) {
+                colorCode.textContent = 'Color Code: ' + input.value;
+            }
         }
 
-        function updateButtonIconColor(input) {
-            const icon = input.closest('.form-group').querySelector('.button-preview .fa-icon');
-            icon.style.color = input.value;
+        function updateButtonIconColor(input, buttonId) {
+            const icon = document.getElementById(`${buttonId}-preview`).querySelector('.fa-icon');
+            if (icon) {
+                icon.style.color = input.value;
+            }
+            const colorPreview = document.getElementById(`${buttonId}-icon-preview`);
+            if (colorPreview) {
+                colorPreview.style.backgroundColor = input.value;
+            }
+            const colorCode = document.getElementById(`${buttonId}-icon-code`);
+            if (colorCode) {
+                colorCode.textContent = 'Color Code: ' + input.value;
+            }
         }
 
         function deleteButton(button) {
