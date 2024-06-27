@@ -265,7 +265,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <?php wp_enqueue_script('jquery'); ?>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -410,7 +410,7 @@
                 <div class="button-row">
                     <button class="profile-button" id="previewButton" onclick="openModal()">Preview Profile</button>
                     <button class="profile-button" id="generateButton">Generate Profile</button>
-                    <button class="profile-button" id="emailButton" onclick="emailProfile()">Email Profile</button>
+                    <button class="profile-button" id="emailButton">Email Profile</button>
                 </div>
             </div>
         </div>
@@ -427,6 +427,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('generateButton').addEventListener('click', generateProfile);
+            document.getElementById('emailButton').addEventListener('click', emailProfile);
             document.getElementById('profileImageFile').addEventListener('change', function(event) {
                 const file = event.target.files[0];
                 if (file) {
@@ -1032,6 +1033,26 @@
             a.click();
         }
 
+        function emailProfile() {
+            const profileHTML = generateProfileHTML();
+            if (!profileHTML) return;
+
+            $.ajax({
+                type: "POST",
+                url: "<?php echo admin_url('admin-ajax.php'); ?>",
+                data: {
+                    action: "send_email_profile",
+                    profile_html: profileHTML
+                },
+                success: function(response) {
+                    alert("Profile emailed successfully!");
+                },
+                error: function(error) {
+                    alert("Failed to email profile.");
+                }
+            });
+        }
+
         function openModal() {
             const profileHTML = generateProfileHTML();
             if (!profileHTML) return;
@@ -1046,38 +1067,6 @@
         function showMarkdownHelp() {
             const selectedValue = document.getElementById('markdownHelp').value;
             document.getElementById('markdownHelpDisplay').textContent = selectedValue;
-        }
-
-        function emailProfile() {
-            const profileHTML = generateProfileHTML();
-            if (!profileHTML) return;
-
-            const toEmail = prompt("Please enter the recipient's email address:");
-            if (!toEmail) {
-                alert("Email address is required.");
-                return;
-            }
-
-            jQuery.ajax({
-                url: '<?php echo admin_url('admin-ajax.php'); ?>',
-                type: 'POST',
-                data: {
-                    action: 'send_profile_email',
-                    profile_html: profileHTML,
-                    to_email: toEmail,
-                    security: '<?php echo wp_create_nonce('send_profile_nonce'); ?>'
-                },
-                success: function(response) {
-                    if (response.success) {
-                        alert('Email sent successfully.');
-                    } else {
-                        alert('Failed to send email: ' + response.data);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    alert('An error occurred: ' + error);
-                }
-            });
         }
     </script>
 </body>
