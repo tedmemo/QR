@@ -63,6 +63,7 @@
             color: #fff;
             width: 100%;
             box-sizing: border-box;
+            text-decoration: none;
         }
         .profile-button:hover {
             transform: scale(1.05);
@@ -264,6 +265,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <?php wp_enqueue_script('jquery'); ?>
 </head>
 <body>
     <div class="container">
@@ -408,6 +410,7 @@
                 <div class="button-row">
                     <button class="profile-button" id="previewButton" onclick="openModal()">Preview Profile</button>
                     <button class="profile-button" id="generateButton">Generate Profile</button>
+                    <button class="profile-button" id="emailButton" onclick="emailProfile()">Email Profile</button>
                 </div>
             </div>
         </div>
@@ -695,13 +698,30 @@
                 return null;
             }
 
+            const formatButtonUrl = (icon, url) => {
+                switch (icon) {
+                    case "fa-phone-alt":
+                        return `tel:${url}`;
+                    case "fa-envelope":
+                        return `mailto:${url}`;
+                    case "fa-facebook":
+                    case "fa-instagram":
+                    case "fa-whatsapp":
+                    case "fa-map-marker-alt":
+                        return url;
+                    default:
+                        return url;
+                }
+            };
+
             const buttons = [];
             for (let i = 0; i < buttonLabels.length; i++) {
                 if (buttonLabels[i].value && buttonUrls[i].value) {
+                    const formattedUrl = formatButtonUrl(buttonIcons[i].getAttribute('data-value'), buttonUrls[i].value);
                     buttons.push({
                         label: buttonLabels[i].value,
                         icon: buttonIcons[i].getAttribute('data-value'),
-                        url: buttonUrls[i].value,
+                        url: formattedUrl,
                         color: buttonColors[i].value,
                         labelColor: buttonLabelColors[i].value,
                         iconColor: buttonIconColors[i].value
@@ -793,10 +813,10 @@
                     </div>
                     <div class="profile-right">
                         ${data.buttons.map(button => `
-                        <button class="profile-button" style="background-color: ${button.color}; color: ${button.labelColor}; display: flex; justify-content: flex-start; align-items: center;">
+                        <a href="${button.url}" target="_blank" class="profile-button" style="background-color: ${button.color}; color: ${button.labelColor}; display: flex; justify-content: flex-start; align-items: center;">
                             <i class="fa-icon fas ${button.icon}" style="color: ${button.iconColor};"></i>
                             <span style="flex-grow: 1; text-align: center;">${button.label}</span>
-                        </button>`).join('')}
+                        </a>`).join('')}
                     </div>
                 </div>
             </div>`;
@@ -948,6 +968,7 @@
                         color: #fff;
                         width: 100%;
                         box-sizing: border-box;
+                        text-decoration: none;
                     }
                     .profile-button:hover {
                         transform: scale(1.05);
@@ -1025,6 +1046,38 @@
         function showMarkdownHelp() {
             const selectedValue = document.getElementById('markdownHelp').value;
             document.getElementById('markdownHelpDisplay').textContent = selectedValue;
+        }
+
+        function emailProfile() {
+            const profileHTML = generateProfileHTML();
+            if (!profileHTML) return;
+
+            const toEmail = prompt("Please enter the recipient's email address:");
+            if (!toEmail) {
+                alert("Email address is required.");
+                return;
+            }
+
+            jQuery.ajax({
+                url: '<?php echo admin_url('admin-ajax.php'); ?>',
+                type: 'POST',
+                data: {
+                    action: 'send_profile_email',
+                    profile_html: profileHTML,
+                    to_email: toEmail,
+                    security: '<?php echo wp_create_nonce('send_profile_nonce'); ?>'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Email sent successfully.');
+                    } else {
+                        alert('Failed to send email: ' + response.data);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('An error occurred: ' + error);
+                }
+            });
         }
     </script>
 </body>
