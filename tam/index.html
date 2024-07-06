@@ -22,6 +22,8 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            box-sizing: border-box;
         }
         h1 {
             color: #2196F3;
@@ -29,16 +31,19 @@
         }
         .location-button {
             display: block;
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
+            width: calc(100% - 40px);
+            padding: 15px;
+            margin: 10px auto;
             background-color: #2196F3;
             color: white;
             border: none;
             border-radius: 5px;
             text-decoration: none;
-            font-size: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
             transition: background-color 0.3s ease, transform 0.3s ease;
+            box-sizing: border-box;
         }
         .location-button:hover {
             background-color: #1e88e5;
