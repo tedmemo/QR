@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Map Links</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e8f4fc;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2196F3;
+            margin-bottom: 20px;
+        }
+        .location-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .location-button:hover {
+            background-color: #1e88e5;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Location Map Links</h1>
+        <a href="https://maps.app.goo.gl/hSbPrYYTNuQGtP8b6" class="location-button" target="_blank">Tiểu Vũ</a>
+        <a href="https://maps.app.goo.gl/vRY6NKX68CGoE72h7" class="location-button" target="_blank">Tiểu Băng</a>
+        <a href="https://maps.app.goo.gl/AUgdLq7iQH7XcLy2A" class="location-button" target="_blank">Shop South Yarra</a>
+        <a href="https://maps.app.goo.gl/FvhqqaZfbUbNnukt9" class="location-button" target="_blank">Shop Camberwell</a>
+        <a href="https://maps.app.goo.gl/5yXwCHhp9pQGKTK59" class="location-button" target="_blank">Kids</a>
+        <a href="https://maps.app.goo.gl/7ybSQurguxnG7GUG8" class="location-button" target="_blank">Springvale Station</a>
+        <a href="https://maps.app.goo.gl/BNLYgCU9ZD35eTzg7" class="location-button" target="_blank">Springvale Supply Nail</a>
+        <a href="https://maps.app.goo.gl/HzWCAcveyvxx9uuQA" class="location-button" target="_blank">Footscray Facial</a>
+        <a href="https://maps.app.goo.gl/TvGrKghNgUPiocnH7" class="location-button" target="_blank">Leigh Nails</a>
+        <a href="https://maps.app.goo.gl/W9ohpPAFwHKUPsay9" class="location-button" target="_blank">Adora St Food</a>
+        <a href="https://maps.app.goo.gl/CgM3HRaqYpJA6fxK8" class="location-button" target="_blank">SPL Laundry</a>
+    </div>
+    <script>
+        // Prevent caching to ensure the latest information is always displayed
+        if (window.location.protocol !== 'file:') {
+            var meta = document.createElement('meta');
+            meta.httpEquiv = 'Cache-Control';
+            meta.content = 'no-cache, no-store, must-revalidate';
+            document.getElementsByTagName('head')[0].appendChild(meta);
+
+            meta = document.createElement('meta');
+            meta.httpEquiv = 'Pragma';
+            meta.content = 'no-cache';
+            document.getElementsByTagName('head')[0].appendChild(meta);
+
+            meta = document.createElement('meta');
+            meta.httpEquiv = 'Expires';
+            meta.content = '0';
+            document.getElementsByTagName('head')[0].appendChild(meta);
+        }
+    </script>
+</body>
+</html>
