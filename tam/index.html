@@ -15,15 +15,17 @@
             height: 100vh;
             margin: 0;
             flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .container {
             text-align: center;
+            width: 100%;
             max-width: 600px;
             background: #fff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin: 20px;
             box-sizing: border-box;
         }
         h1 {
@@ -32,9 +34,9 @@
         }
         .location-button {
             display: block;
-            width: calc(100% - 40px);
+            width: 100%;
             padding: 15px;
-            margin: 10px auto;
+            margin: 10px 0;
             background-color: #2196F3;
             color: white;
             border: none;
@@ -57,7 +59,7 @@
             width: 100%;
         }
         .dropdown button {
-            width: calc(100% - 40px);
+            width: 100%;
             background-color: #800080;
             color: white;
             padding: 15px;
@@ -72,14 +74,14 @@
             display: none;
             position: absolute;
             background-color: #f9f9f9;
-            min-width: 100%;
+            width: 100%;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
             margin-top: 10px;
         }
         .dropdown-content .location-button {
             margin: 5px 0;
-            width: calc(100% - 20px);
+            width: 100%;
         }
         .dropdown:hover .dropdown-content {
             display: block;
@@ -105,6 +107,7 @@
                 <a href="https://maps.app.goo.gl/TvGrKghNgUPiocnH7" class="location-button" draggable="true">Leigh Nails</a>
                 <a href="https://maps.app.goo.gl/W9ohpPAFwHKUPsay9" class="location-button" draggable="true">Adora St Food</a>
                 <a href="https://maps.app.goo.gl/CgM3HRaqYpJA6fxK8" class="location-button" draggable="true">SPL Laundry</a>
+                <a href="https://maps.app.goo.gl/PeoaYGySaKvNzTnp8" class="location-button" draggable="true">Wash Car Camberwell</a>
             </div>
         </div>
     </div>
@@ -151,6 +154,24 @@
             button.ondrop = drop;
             button.id = Math.random().toString(36).substr(2, 9); // Assign a unique ID
         });
+
+        // Prevent caching
+        if (window.location.protocol !== 'file:') {
+            var meta = document.createElement('meta');
+            meta.httpEquiv = 'Cache-Control';
+            meta.content = 'no-cache, no-store, must-revalidate';
+            document.getElementsByTagName('head')[0].appendChild(meta);
+
+            meta = document.createElement('meta');
+            meta.httpEquiv = 'Pragma';
+            meta.content = 'no-cache';
+            document.getElementsByTagName('head')[0].appendChild(meta);
+
+            meta = document.createElement('meta');
+            meta.httpEquiv = 'Expires';
+            meta.content = '0';
+            document.getElementsByTagName('head')[0].appendChild(meta);
+        }
     </script>
 </body>
 </html>
