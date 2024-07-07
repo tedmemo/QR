@@ -14,6 +14,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            flex-direction: column;
         }
         .container {
             text-align: center;
@@ -44,46 +45,154 @@
             text-transform: uppercase;
             transition: background-color 0.3s ease, transform 0.3s ease;
             box-sizing: border-box;
+            cursor: move;
         }
         .location-button:hover {
             background-color: #1e88e5;
             transform: scale(1.05);
+        }
+        .form-container {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        .form-container input {
+            width: calc(50% - 22px);
+            padding: 10px;
+            margin: 5px 5px 10px 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-container button {
+            width: calc(100% - 30px);
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        .dropdown button {
+            width: calc(100% - 40px);
+            background-color: #800080;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 100%;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            margin-top: 10px;
+        }
+        .dropdown-content .location-button {
+            margin: 5px 0;
+            width: calc(100% - 20px);
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Location Map Links</h1>
-        <a href="https://maps.app.goo.gl/hSbPrYYTNuQGtP8b6" class="location-button" target="_blank">Tiểu Vũ</a>
-        <a href="https://maps.app.goo.gl/vRY6NKX68CGoE72h7" class="location-button" target="_blank">Tiểu Băng</a>
-        <a href="https://maps.app.goo.gl/AUgdLq7iQH7XcLy2A" class="location-button" target="_blank">Shop South Yarra</a>
-        <a href="https://maps.app.goo.gl/FvhqqaZfbUbNnukt9" class="location-button" target="_blank">Shop Camberwell</a>
-        <a href="https://maps.app.goo.gl/5yXwCHhp9pQGKTK59" class="location-button" target="_blank">Kids</a>
-        <a href="https://maps.app.goo.gl/7ybSQurguxnG7GUG8" class="location-button" target="_blank">Springvale Station</a>
-        <a href="https://maps.app.goo.gl/BNLYgCU9ZD35eTzg7" class="location-button" target="_blank">Springvale Supply Nail</a>
-        <a href="https://maps.app.goo.gl/HzWCAcveyvxx9uuQA" class="location-button" target="_blank">Footscray Facial</a>
-        <a href="https://maps.app.goo.gl/TvGrKghNgUPiocnH7" class="location-button" target="_blank">Leigh Nails</a>
-        <a href="https://maps.app.goo.gl/W9ohpPAFwHKUPsay9" class="location-button" target="_blank">Adora St Food</a>
-        <a href="https://maps.app.goo.gl/CgM3HRaqYpJA6fxK8" class="location-button" target="_blank">SPL Laundry</a>
+        <div id="button-container">
+            <a href="https://maps.app.goo.gl/hSbPrYYTNuQGtP8b6" class="location-button" draggable="true">Tiểu Vũ</a>
+            <a href="https://maps.app.goo.gl/vRY6NKX68CGoE72h7" class="location-button" draggable="true">Tiểu Băng</a>
+            <a href="https://maps.app.goo.gl/AUgdLq7iQH7XcLy2A" class="location-button" draggable="true">Shop South Yarra</a>
+            <a href="https://maps.app.goo.gl/FvhqqaZfbUbNnukt9" class="location-button" draggable="true">Shop Camberwell</a>
+            <a href="https://maps.app.goo.gl/5yXwCHhp9pQGKTK59" class="location-button" draggable="true">Kids</a>
+            <a href="https://maps.app.goo.gl/7ybSQurguxnG7GUG8" class="location-button" draggable="true">Springvale Station</a>
+            <a href="https://maps.app.goo.gl/BNLYgCU9ZD35eTzg7" class="location-button" draggable="true">Springvale Supply Nail</a>
+            <a href="https://maps.app.goo.gl/HzWCAcveyvxx9uuQA" class="location-button" draggable="true">Footscray Facial</a>
+            <a href="https://maps.app.goo.gl/TvGrKghNgUPiocnH7" class="location-button" draggable="true">Leigh Nails</a>
+            <a href="https://maps.app.goo.gl/W9ohpPAFwHKUPsay9" class="location-button" draggable="true">Adora St Food</a>
+            <a href="https://maps.app.goo.gl/CgM3HRaqYpJA6fxK8" class="location-button" draggable="true">SPL Laundry</a>
+        </div>
+        <div class="dropdown">
+            <button>Collections</button>
+            <div id="dropdown-content" class="dropdown-content"></div>
+        </div>
+    </div>
+    <div class="form-container">
+        <input type="text" id="title" placeholder="Enter Title" />
+        <input type="text" id="address" placeholder="Enter Google Maps URL" />
+        <button onclick="addButton()">Add New Location</button>
     </div>
     <script>
-        // Prevent caching to ensure the latest information is always displayed
-        if (window.location.protocol !== 'file:') {
-            var meta = document.createElement('meta');
-            meta.httpEquiv = 'Cache-Control';
-            meta.content = 'no-cache, no-store, must-revalidate';
-            document.getElementsByTagName('head')[0].appendChild(meta);
-
-            meta = document.createElement('meta');
-            meta.httpEquiv = 'Pragma';
-            meta.content = 'no-cache';
-            document.getElementsByTagName('head')[0].appendChild(meta);
-
-            meta = document.createElement('meta');
-            meta.httpEquiv = 'Expires';
-            meta.content = '0';
-            document.getElementsByTagName('head')[0].appendChild(meta);
+        function addButton() {
+            var title = document.getElementById('title').value;
+            var address = document.getElementById('address').value;
+            if (title && address) {
+                var buttonContainer = document.getElementById('button-container');
+                var newButton = createButton(title, address);
+                buttonContainer.appendChild(newButton);
+                document.getElementById('title').value = '';
+                document.getElementById('address').value = '';
+            } else {
+                alert('Please enter both title and address.');
+            }
         }
+
+        function createButton(title, address) {
+            var newButton = document.createElement('a');
+            newButton.href = address;
+            newButton.className = 'location-button';
+            newButton.target = '_blank';
+            newButton.textContent = title;
+            newButton.draggable = true;
+
+            newButton.ondragstart = dragStart;
+            newButton.ondragover = dragOver;
+            newButton.ondrop = drop;
+
+            return newButton;
+        }
+
+        function dragStart(event) {
+            event.dataTransfer.setData('text/plain', event.target.id);
+            setTimeout(() => {
+                event.target.style.display = 'none';
+            }, 0);
+        }
+
+        function dragOver(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const id = event.dataTransfer.getData('text/plain');
+            const draggable = document.getElementById(id);
+            draggable.style.display = 'block';
+            event.target.closest('div').insertBefore(draggable, event.target.nextSibling);
+        }
+
+        document.querySelectorAll('.location-button').forEach(button => {
+            button.ondragstart = dragStart;
+            button.ondragover = dragOver;
+            button.ondrop = drop;
+            button.id = Math.random().toString(36).substr(2, 9); // Assign a unique ID
+        });
     </script>
 </body>
 </html>
